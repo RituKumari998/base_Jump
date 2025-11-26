@@ -33,8 +33,8 @@ createAppKit({
   },
   features: {
     analytics: false, // Disable analytics to prevent extra renders
-    email: false, // Disable email login
-    socials: false, // Disable social logins
+    email: true, // Disable email login
+    socials: true, // Disable social logins
     onramp: false, // Disable on-ramp
   },
   themeMode: 'dark',
