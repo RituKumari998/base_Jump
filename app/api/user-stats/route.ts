@@ -1,5 +1,7 @@
 import { NextRequest } from "next/server";
 import { getUserDailyMintCount, getUserMintHistory, getTopScores, getUserGameDataByAddress, hasUserMintedToday, getUserGiftBoxStats } from "@/lib/database";
+import { successResponse, validationErrorResponse, serverErrorResponse } from "@/lib/api-helpers";
+import { ethers } from "ethers";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -11,10 +13,12 @@ export async function GET(request: NextRequest) {
     const fid = searchParams.get('fid');
 
     if (!userAddress) {
-      return Response.json(
-        { success: false, error: "Missing userAddress parameter" },
-        { status: 400 }
-      );
+      return validationErrorResponse("Missing userAddress parameter");
+    }
+
+    // Validate userAddress format
+    if (!ethers.isAddress(userAddress)) {
+      return validationErrorResponse('Invalid userAddress format');
     }
 
     // Get user's daily mint count
@@ -38,30 +42,27 @@ export async function GET(request: NextRequest) {
     console.log('User game data:', userGameData);
     console.log('Gift box stats:', giftBoxStats);
     
-    return Response.json({
-      success: true,
-      data: {
-        userAddress,
-        dailyMintCount,
-        mintHistory,
-        topScores,
-        dailyMintsRemaining: 5 - dailyMintCount,
-        currentSeasonScore: userGameData?.currentSeasonScore || null,
-        bestScore: userGameData?.score || null,
-        level: userGameData?.level || null,
-        hasMintedToday: hasMintedToday,
-        giftBoxStats: giftBoxStats,
-        lastGiftBoxUpdate: userGameData?.lastGiftBoxUpdate || null,
-        hasFollowed: userGameData?.hasFollowed || false,
-        lastShareBonus: userGameData?.lastShareBonus || null,
-        lastBasedNewsBonus: userGameData?.lastBasedNewsBonus || null
-      }
+    return successResponse({
+      userAddress,
+      dailyMintCount,
+      mintHistory,
+      topScores,
+      dailyMintsRemaining: 5 - dailyMintCount,
+      currentSeasonScore: userGameData?.currentSeasonScore || null,
+      bestScore: userGameData?.score || null,
+      level: userGameData?.level || null,
+      hasMintedToday: hasMintedToday,
+      giftBoxStats: giftBoxStats,
+      lastGiftBoxUpdate: userGameData?.lastGiftBoxUpdate || null,
+      hasFollowed: userGameData?.hasFollowed || false,
+      lastShareBonus: userGameData?.lastShareBonus || null,
+      lastBasedNewsBonus: userGameData?.lastBasedNewsBonus || null
     });
   } catch (error) {
     console.error("Error getting user stats:", error);
-    return Response.json(
-      { success: false, error: "Failed to get user stats" },
-      { status: 500 }
+    return serverErrorResponse(
+      "Failed to get user stats",
+      error instanceof Error ? { message: error.message } : undefined
     );
   }
 } 
