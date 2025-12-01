@@ -359,10 +359,14 @@ Join our waitlist to be the first to play on the web:
 
 ### Backend
 
-- **API Routes**: Next.js API Routes
+- **API Routes**: Next.js API Routes with enhanced error handling
 - **Database**: MongoDB (player data, scores, leaderboards)
+  - Connection pooling (2-10 connections)
+  - Automatic retries for reads/writes
+  - Health monitoring capabilities
 - **Cache**: Upstash Redis (fast data access)
 - **Authentication**: Custom signature-based system
+- **API Helpers**: Standardized response formatting and validation utilities
 
 ### Blockchain
 
