@@ -455,6 +455,68 @@ pnpm start
 
 ---
 
+## 🔧 Backend Architecture
+
+### MongoDB Connection Management
+
+The backend uses an optimized MongoDB connection setup with:
+
+- **Connection Pooling**: Maintains 2-10 active connections for optimal performance
+- **Automatic Retries**: Retries failed reads/writes automatically
+- **Build-Time Safety**: Gracefully handles missing MongoDB URI during build
+- **Health Monitoring**: Built-in `checkDatabaseHealth()` function for monitoring
+
+**Connection Configuration:**
+```typescript
+// lib/mongodb.ts
+- maxPoolSize: 10 connections
+- minPoolSize: 2 connections
+- maxIdleTimeMS: 30000 (30 seconds)
+- serverSelectionTimeoutMS: 5000
+- socketTimeoutMS: 45000
+- retryWrites: true
+- retryReads: true
+```
+
+### API Helper Utilities
+
+Standardized API response handling via `lib/api-helpers.ts`:
+
+**Available Helpers:**
+- `successResponse(data, status)` - Standardized success responses
+- `errorResponse(error, status, details)` - Error responses
+- `serverErrorResponse(error, details)` - Server errors (500)
+- `validationErrorResponse(message, details)` - Validation errors (400)
+- `notFoundResponse(resource)` - Not found errors (404)
+- `validateRequiredFields(body, fields)` - Request validation
+- `withErrorHandling(handler)` - Async error wrapper
+
+**Example Usage:**
+```typescript
+import { successResponse, validationErrorResponse } from '@/lib/api-helpers';
+
+export async function POST(request: NextRequest) {
+  const validation = validateRequiredFields(body, ['fid', 'score']);
+  if (!validation.isValid) {
+    return validationErrorResponse(
+      `Missing fields: ${validation.missingFields.join(', ')}`
+    );
+  }
+  return successResponse({ score, level });
+}
+```
+
+### Enhanced Error Handling
+
+All API routes now feature:
+- ✅ Consistent error response format
+- ✅ Detailed validation error messages
+- ✅ Proper HTTP status codes
+- ✅ Error logging for debugging
+- ✅ Type-safe error handling
+
+---
+
 ## 🎯 API Endpoints
 
 ### Game APIs
