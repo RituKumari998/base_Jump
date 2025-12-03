@@ -860,26 +860,40 @@ export function Demo() {
           {stoneShooterError && (
             <motion.div 
               className="mb-8 max-w-md"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, type: "spring" }}
             >
-              <div className="border border-red-500 bg-transparent px-4 py-3 backdrop-blur-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-1 h-8 bg-red-500 mr-3"></div>
+              <div className="relative overflow-hidden border-2 border-red-500/50 bg-red-500/10 backdrop-blur-xl px-6 py-4 rounded-2xl shadow-2xl">
+                {/* Animated background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-red-600/10 to-red-500/20 opacity-50 animate-pulse"></div>
+                
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                      <FontAwesomeIcon icon={faExclamationTriangle} className="text-white text-lg" />
+                    </div>
                     <div>
-                      <div className="text-red-500 text-xs font-medium uppercase tracking-wider mb-1">ERROR</div>
-                      <span className="text-sm font-light text-white">Something Went Wrong</span>
+                      <div className="text-red-300 text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <FontAwesomeIcon icon={faExclamationTriangle} className="text-sm" />
+                        ERROR
+                      </div>
+                      <span className="text-sm font-medium text-white">{stoneShooterError}</span>
                     </div>
                   </div>
-                  <button 
+                  <motion.button 
                     onClick={() => setStoneShooterError(null)}
-                    className="text-red-500 hover:text-red-400 ml-4 h-8 w-8 flex items-center justify-center border border-red-500"
+                    className="text-red-300 hover:text-white hover:bg-red-500/30 ml-4 h-10 w-10 flex items-center justify-center rounded-full border-2 border-red-500/50 transition-all duration-200"
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    ×
-                  </button>
+                    <FontAwesomeIcon icon={faExclamationTriangle} className="text-sm" />
+                  </motion.button>
                 </div>
+                
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-red-500 to-red-700 rounded-2xl opacity-20 blur-xl -z-10"></div>
               </div>
             </motion.div>
           )}
